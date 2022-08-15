@@ -6,7 +6,7 @@ export class MongoDBUsuarios extends MongoClass {
     super("usuarios", usuariosSchema);
   }
 
-  async findByName(email) {
+  async findByEmail(email) {
     try {
       const usuario = await this.collection.findOne({ email: email });
       return usuario;

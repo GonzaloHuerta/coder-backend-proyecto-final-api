@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { usuariosDao } from "../daos/index.js";
+import { encryptPassword, comparePassword } from "../config/bcrypt.js";
 
 /** Recibe 3 parámetros:
  * 1. nombre de la funcion 'registro'
@@ -17,10 +18,11 @@ passport.use(
       passReqToCallback: true, //Para que el callback reciba el req completo
     },
     async (req, email, password, done) => {
-      const usuario = await usuariosDao.findByName(email);
+      const usuario = await usuariosDao.findByEmail(email);
       if (usuario) {
         return done(null, false, { message: "El usuario ya existe" });
       }
+      req.body.password = await encryptPassword(password);
       const nuevoUsuario = await usuariosDao.create(req.body);
       return done(null, nuevoUsuario);
     }
@@ -31,21 +33,22 @@ passport.use(
   "login",
   new LocalStrategy(
     {
-      usernameField: "nombre",
+      usernameField: "email",
       passwordField: "password",
       passReqToCallback: true, //Para que el callback reciba el req completo
     },
-    async (req, nombre, password, done) => {
-      console.log(nombre, password);
-      // done es un callback que se ejecuta cuando termina la funcion
-      // const usuario = await Usuario.findOne({ nombre });
-      // if (!usuario) {
-      //   return done(null, false, { message: "El usuario no existe" });
-      // }
-      // if (usuario.contrasenia !== password) {
-      //   return done(null, false, { message: "El password es incorrecto" });
-      // }
-      const usuario = null;
+    async (req, email, password, done) => {
+      console.log(email, password);
+      const usuario = await usuariosDao.findByEmail(email);
+      console.log(usuario);
+      if (!usuario) {
+        return done(null, false, { message: "El usuario no existe" });
+      }
+      // compara el password que ingreso el usuario con el password hasheado y guardado de la DB
+      const isTruePassword = await comparePassword(password, usuario.password);
+      if (!isTruePassword) {
+        return done(null, false, { message: "El password es incorrecto" });
+      }
       return done(null, usuario);
     }
   )
