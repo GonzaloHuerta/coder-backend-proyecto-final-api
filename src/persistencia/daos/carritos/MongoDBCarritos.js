@@ -1,4 +1,4 @@
-import MongoClass from "../../contenedores/MongoClass.js";
+import MongoClass from "../../containers/MongoClass.js";
 import { carritosSchema } from "../../models/CarritosSchema.js";
 
 export class MongoDBCarritos extends MongoClass {
