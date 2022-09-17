@@ -18,21 +18,26 @@ passport.use('register', new localStrategy({
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
-},async(req, email, password, done)=>{
+},
+async(req, email, password, done)=>{
     const usuarioDb = await usuariosDao.getByEmail(email);
     if(usuarioDb){
-        return done(null, false);
+        return done(null, false, {message: 'El usuario ya eastá registrado'});
     }
 
-    const nuevoUsuario = new UsuariosDaoMongoDb();
-    const obj = {
+    /* const nuevoUsuario = new UsuariosDaoMongoDb(); */
+    /* const obj = {
         email: email,
-        password: encriptar(password)
-    }
-    nuevoUsuario.email = email;
+        password: encriptar(password),
+        nombre: req.body.nombre,
+        apellido: req.body.apellido
+    } */
+    /* nuevoUsuario.email = email;
     nuevoUsuario.password = encriptar(password);
-    await nuevoUsuario.create(obj);
-    done(null, nuevoUsuario);
+    await nuevoUsuario.create(obj); */
+    req.body.password = await encriptar(password);
+    const nuevoUsuario = await usuariosDao.create(req.body);
+    return done(null, nuevoUsuario);
 }))
 
 /* passport.serializeUser((usuario, done)=>{

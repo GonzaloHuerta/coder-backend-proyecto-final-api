@@ -2,5 +2,7 @@ import mongoose from "mongoose";
 
 export const usuariosSchema = new mongoose.Schema({
     email: String,
-    password: String
+    password: String,
+    nombre: String,
+    apellido: String
 });
