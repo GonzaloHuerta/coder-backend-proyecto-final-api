@@ -35,18 +35,24 @@ passport.use('register', new localStrategy({
     done(null, nuevoUsuario);
 }))
 
-passport.serializeUser((usuario, done)=>{
+/* passport.serializeUser((usuario, done)=>{
     done(null, usuario.email);
-})
+}) */
 
-passport.deserializeUser(async(email, done)=>{
+/* passport.deserializeUser(async(email, done)=>{
     const usuario = await usuariosDao.getByEmail(email);
     done(null, usuario);
-})
+}) */
 
-function isValidPassword(){
-
-}
+//LAU
+passport.serializeUser((usuario, done) => {
+    done(null, usuario.id); // _id de mongo
+  });
+  
+  passport.deserializeUser(async (id, done) => {
+    const usuario = await usuariosDao.getById(id);
+    done(null, usuario);
+  });
 
 passport.use('login', new localStrategy({
     usernameField: 'email',
@@ -56,15 +62,14 @@ passport.use('login', new localStrategy({
     const usuarioDb = await usuariosDao.getByEmail(email);
     console.log(usuarioDb);
     if(!usuarioDb){
-        console.log("entra acá")
+        console.log("No existe el usuario")
         return done(null, false);
     }
     if(!comparar(password, usuarioDb.password)){
         console.log("Contraseña incorrecta");
         return done(null, false)
     }
-
-    done(null, usuarioDb);
+    return done(null, usuarioDb);
 }))
 
 

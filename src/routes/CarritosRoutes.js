@@ -87,9 +87,4 @@ carritosRouter.delete('/:id/productos/:productoId', async (req, res) => {
     }
 });
 
-
-
-
-
-
 export default carritosRouter;

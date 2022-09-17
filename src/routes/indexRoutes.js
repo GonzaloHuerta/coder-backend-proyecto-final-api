@@ -1,16 +1,16 @@
 import { Router } from "express";
-import productosRouter from "./ProductosRoutes.js";
-import carritosRouter from "./CarritosRoutes.js";
-import registroRouter from "./RegistroRoutes.js";
-import loginRouter from "./LoginRoutes.js";
-import logoutRouter from "./LogoutRoutes.js";
+import productosRouter from "./productsRoutes.js";
+/* import carritosRouter from "./CarritosRoutes.js"; */
+import registerRouter from "./registerRoutes.js";
+import loginRouter from "./loginRoutes.js";
+import logoutRouter from "./logoutRoutes.js";
 
 const apiRouter = Router();
 
-apiRouter.use("/registro", registroRouter);
+apiRouter.use("/register", registerRouter);
 apiRouter.use("/login", loginRouter);
-apiRouter.use("/productos", productosRouter);
-apiRouter.use("/carritos", carritosRouter);
+apiRouter.use("/products", productosRouter);
+/* apiRouter.use("/carritos", carritosRouter); */
 apiRouter.use("/logout", logoutRouter);
 
 export default apiRouter;
