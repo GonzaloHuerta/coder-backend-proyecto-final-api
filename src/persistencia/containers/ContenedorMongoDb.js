@@ -32,7 +32,8 @@ class ContenedorMongoDb{
 
     async getById(id){
         try {
-            const contenido = await this.collection.find({id: id})
+            /* const contenido = await this.collection.find({id: id}) */
+            const contenido = await this.collection.findById(id);
             return contenido;
         } catch (error) {
             console.log(error);

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { carritosDao as api } from '../daos/index.js';
+import { carritosDao as api } from '../persistencia/daos/index.js';
+
 const carritosRouter = Router();
 
 carritosRouter.get('/', async (req, res) => {
@@ -21,12 +22,16 @@ carritosRouter.get('/:id', async (req, res) => {
 });
 
 carritosRouter.post('/', async (req, res) => {
+    const obj = {
+        productos: [],
+        userId: req.user._id    //le asigno al carrito el id del usuario actual
+    }
     try {
-        const nuevoCarrito = await api.create(req.body);
+        const nuevoCarrito = await api.create(obj);
         res.status(201).json({
             message: 'Carrito creado con éxito',
             carrito: nuevoCarrito});
-        }catch (err) {
+    }catch (err) {
         res.status(500).json({message: err.message});
     }
 });
@@ -82,6 +87,16 @@ carritosRouter.delete('/:id/productos/:productoId', async (req, res) => {
         if(!productoId) {
             res.status(404).json({message: 'El producto no existe'});
         }
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
+});
+
+// obtener id carrito de usuario
+carritosRouter.get('/user/:idUser', async (req, res) => {
+    try {
+        const carrito = await api.getUserCart(req.params.idUser);
+        carrito ? res.status(200).json(carrito._id) : res.status(404).json({message: 'Carrito no encontrado. id: ' + req.params.id});
     } catch (err) {
         res.status(500).json({message: err.message});
     }

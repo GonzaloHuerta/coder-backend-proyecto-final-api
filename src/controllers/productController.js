@@ -10,7 +10,6 @@ const checkIfIsAdmin = (req, res, next)=>{
 }
 
 const getAllProducts = async(req, res)=>{
-    console.log("IS AUTH: ", req.isAuthenticated())
     try{
         const productos = await api.getAll();
         productos? res.status(200).json(productos) : res.status(404).json({message: 'No hay productos disponibles'});

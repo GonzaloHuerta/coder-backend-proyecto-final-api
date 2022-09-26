@@ -1,7 +1,6 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
 import { usuariosDao } from '../persistencia/daos/index.js';
-import {UsuariosDaoMongoDb} from '../persistencia/daos/usuarios/UsuariosDaoMongoDb.js';
 import bcrypt, { compare } from 'bcrypt';
 
 function encriptar(password){
@@ -22,42 +21,26 @@ passport.use('register', new localStrategy({
 async(req, email, password, done)=>{
     const usuarioDb = await usuariosDao.getByEmail(email);
     if(usuarioDb){
-        return done(null, false, {message: 'El usuario ya eastá registrado'});
+        return done(null, false, {message: 'El usuario ya está registrado'});
     }
-
-    /* const nuevoUsuario = new UsuariosDaoMongoDb(); */
-    /* const obj = {
-        email: email,
-        password: encriptar(password),
-        nombre: req.body.nombre,
-        apellido: req.body.apellido
-    } */
-    /* nuevoUsuario.email = email;
-    nuevoUsuario.password = encriptar(password);
-    await nuevoUsuario.create(obj); */
     req.body.password = await encriptar(password);
     const nuevoUsuario = await usuariosDao.create(req.body);
     return done(null, nuevoUsuario);
 }))
 
-/* passport.serializeUser((usuario, done)=>{
-    done(null, usuario.email);
-}) */
 
-/* passport.deserializeUser(async(email, done)=>{
-    const usuario = await usuariosDao.getByEmail(email);
-    done(null, usuario);
-}) */
-
-//LAU
 passport.serializeUser((usuario, done) => {
+    /* console.log("Usuario.id serialize: ", usuario.id) */
     done(null, usuario.id); // _id de mongo
-  });
+});
   
-  passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id, done) => {
+    /* console.log("Entra deserialize") */
     const usuario = await usuariosDao.getById(id);
+    /* console.log("Usuario deserialize: ", usuario) */
     done(null, usuario);
-  });
+});
+
 
 passport.use('login', new localStrategy({
     usernameField: 'email',
@@ -74,7 +57,7 @@ passport.use('login', new localStrategy({
         console.log("Contraseña incorrecta");
         return done(null, false)
     }
-    return done(null, usuarioDb);
+    done(null, usuarioDb);
 }))
 
 

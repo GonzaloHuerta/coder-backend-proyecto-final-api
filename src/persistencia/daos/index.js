@@ -3,12 +3,14 @@ import { MensajesDaoFirebase } from './mensajes/MensajesDaoFirebase.js';
 import { MensajesDaoMongoDb } from './mensajes/MensajesDaoMongoDb.js';
 import { UsuariosDaoMongoDb } from './usuarios/UsuariosDaoMongoDb.js';
 import {ProductosDaoMongoDb} from './productos/ProductosDaoMongoDb.js';
+import {CarritosDaoMongoDb} from './carritos/CarritosDaoMongoDb.js';
 
 dotenv.config();
 
 let mensajesDao;
 let usuariosDao;
 let productosDao;
+let carritosDao;
 
 switch (process.env.DB_NAME) {
   case 'mongoDB':
@@ -16,6 +18,7 @@ switch (process.env.DB_NAME) {
     mensajesDao = new MensajesDaoMongoDb();
     usuariosDao = new UsuariosDaoMongoDb();
     productosDao = new ProductosDaoMongoDb();
+    carritosDao = new CarritosDaoMongoDb();
     break;
   
   case 'firebase':
@@ -28,5 +31,5 @@ switch (process.env.DB_NAME) {
     break;
 }
 
-export {mensajesDao, usuariosDao, productosDao}
+export {mensajesDao, usuariosDao, productosDao, carritosDao}
 

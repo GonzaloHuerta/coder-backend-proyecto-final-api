@@ -1,14 +1,9 @@
 import { Router } from "express";
 
+import { logoutController } from "../controllers/logoutController.js";
+
 const router = Router();
 
-router.post("/", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send({ message: "Error al cerrar sesión" });
-    }
-    res.status(200).send({ message: "Sesión cerrada" });
-  });
-});
+router.post("/", logoutController);
 
 export default router;

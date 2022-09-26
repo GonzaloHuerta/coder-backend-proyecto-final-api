@@ -14,5 +14,6 @@ export const carritosSchema = new mongoose.Schema({
             }
         }
     ],
+    userId: String
 });
 

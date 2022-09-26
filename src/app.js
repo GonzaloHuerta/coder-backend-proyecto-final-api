@@ -5,12 +5,14 @@ import {Server as ioServer} from 'socket.io';
 import {mensajesDao as api} from './persistencia/daos/index.js';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import './passport/local.js';
 import passport from 'passport';
+import './passport/local.js';
 import cluster from 'cluster';
 import os from 'os';
 import {logError, logWarning, logInfo} from './loggers/logger.js';
 import apiRouter from "./routes/indexRoutes.js";
+
+import cookieParser from 'cookie-parser';
 
 //variables
 const MONGO_USER = process.env.MONGO_USER;
@@ -34,20 +36,32 @@ if (cluster.isPrimary && MODO === "cluster") {
 }else{
     const app = express();
 
+    app.use(
+      cors({
+        origin: 'http://localhost:3000',
+        credentials: true
+      })
+    );
+
     //servers
     const httpServer = http.createServer(app);
     const io = new ioServer(httpServer);
+    
+    app.use(cookieParser('asdfghjkl'));
+
+    const cookieExpirationDate = new Date();
+    const cookieExpirationDays = 365;
+    cookieExpirationDate.setDate(cookieExpirationDate.getDate() + cookieExpirationDays);
     
     //session
     app.use(session({
         saveUninitialized: true,
         resave: true,
-        secret: 'secretKey',
+        secret: 'asdfghjkl',
         store: MongoStore.create({
           mongoUrl:`mongodb+srv://${MONGO_USER}:${MONGO_PASS}@cluster0.o7pgm.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`,}),
         cookie:{
-          maxAge: 600000, 
-          secure: false,
+          maxAge: 600000,
           sameSite: 'none',
           httpOnly: true
         },
@@ -62,12 +76,6 @@ if (cluster.isPrimary && MODO === "cluster") {
     app.use(express.static('public'));
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
-    app.use(
-      cors({
-        origin: "*",
-        methods: "GET, POST, PUT, DELETE, OPTIONS",
-      })
-    );
     
     const mensajes = await api.getAll();
     
